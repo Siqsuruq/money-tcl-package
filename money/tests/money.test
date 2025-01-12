@@ -30,7 +30,7 @@ test divide_test_1 {Dividing two numbers} -body {
 
 test divide_test_2 {Dividing by zero should return an error} -body {
     money divide 100 0
-} -errorCode {TCL_ERROR}
+} -returnCodes error -result "Division by zero is not allowed."
 
 test percentagechange_test_1 {Percentage increase} -body {
     money percentagechange 100 150
@@ -48,9 +48,9 @@ test average_test_1 {Average of a list of numbers} -body {
     money average {10 20 30 40 50}
 } -result "30.00"
 
-#test average_test_2 {Average of an empty list} -body {
-#    money average {}
-#} -errorCode {EMPTY_LIST}
+test average_test_2 {Average of an empty list} -body {
+    money average {}
+} -returnCodes error -result "List is empty"
 
 # Cleanup tests
 cleanupTests

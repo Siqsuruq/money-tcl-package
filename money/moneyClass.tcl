@@ -165,6 +165,9 @@ nx::Object create money {
 	:public object method average {vlist} {
 		try {
 			set ll [llength $vlist]
+			if {$ll == 0} {
+				return -code error "List is empty"
+			}
 			set f [::math::decimal::fromstr 0]
 			for {set i 0} {$i < $ll} {incr i} {
 				set f [::math::decimal::add [::math::decimal::fromstr [lindex $vlist $i]] $f]
