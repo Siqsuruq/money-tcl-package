@@ -1,0 +1,56 @@
+package require tcltest
+namespace import ::tcltest::*
+
+# Add parent directory to auto_path
+lappend auto_path [file normalize [file join [pwd] ..]]
+
+# Load the money package
+package require money
+
+# Define Tests
+test add_test_1 {Adding two positive numbers} -body {
+    money add 100 50
+} -result "150.00"
+
+test add_test_2 {Adding negative and positive numbers} -body {
+    money add -100 50
+} -result "-50.00"
+
+test subtract_test_1 {Subtracting two numbers} -body {
+    money subtract 100 50
+} -result "50.00"
+
+test multiply_test_1 {Multiplying two numbers} -body {
+    money multiply 10 5
+} -result "50.00"
+
+test divide_test_1 {Dividing two numbers} -body {
+    money divide 100 4
+} -result "25.00"
+
+test divide_test_2 {Dividing by zero should return an error} -body {
+    money divide 100 0
+} -errorCode {TCL_ERROR}
+
+test percentagechange_test_1 {Percentage increase} -body {
+    money percentagechange 100 150
+} -result "+50.00%"
+
+test percentagechange_test_2 {Percentage decrease} -body {
+    money percentagechange 200 150
+} -result "-25.00%"
+
+test percentagechange_test_3 {Zero as original value} -body {
+    money percentagechange 0 150
+} -result "Error: Percentage change cannot be calculated when the original value is zero."
+
+test average_test_1 {Average of a list of numbers} -body {
+    money average {10 20 30 40 50}
+} -result "30.00"
+
+#test average_test_2 {Average of an empty list} -body {
+#    money average {}
+#} -errorCode {EMPTY_LIST}
+
+# Cleanup tests
+cleanupTests
