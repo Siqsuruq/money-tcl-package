@@ -138,7 +138,6 @@ package require nx
 package require math::decimal
 package require money
 
-money create myMoney
-myMoney setRoundDigits 3
-puts [myMoney add 100.125 200.375]  ;# Outputs 300.500
-puts [myMoney addPercent 100 15]    ;# Outputs 115.00
+money setRoundDigits 3
+puts [money add 100.125 200.375]  ;# Outputs 300.500
+puts [money addPercent 100 15]    ;# Outputs 115.00
