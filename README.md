@@ -1,10 +1,10 @@
-# Money Class Documentation
+# Money Package Documentation
 
-The `money` class is a simple and flexible money-handling package built using the NX framework and `math::decimal`. It provides utilities for common monetary calculations like addition, subtraction, percentages, and rounding.
+The `money` package is a simple and flexible money-handling package built using the NX framework and `math::decimal`. It provides utilities for common monetary calculations like addition, subtraction, percentages, and rounding.
 
 ---
 
-## Class Properties
+## Object Properties
 
 - **`version`**: (Default: `"1.0.2"`)  
   The version of the `money` package.
