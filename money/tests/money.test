@@ -1,56 +1,258 @@
 package require tcltest
 namespace import ::tcltest::*
 
-# Add parent directory to auto_path
 lappend auto_path [file normalize [file join [pwd] ..]]
-
-# Load the money package
 package require money
 
-# Define Tests
+# ---- existing tests ----
+
 test add_test_1 {Adding two positive numbers} -body {
-    money add 100 50
+	money add 100 50
 } -result "150.00"
 
 test add_test_2 {Adding negative and positive numbers} -body {
-    money add -100 50
+	money add -100 50
 } -result "-50.00"
 
 test subtract_test_1 {Subtracting two numbers} -body {
-    money subtract 100 50
+	money subtract 100 50
 } -result "50.00"
 
 test multiply_test_1 {Multiplying two numbers} -body {
-    money multiply 10 5
+	money multiply 10 5
 } -result "50.00"
 
 test divide_test_1 {Dividing two numbers} -body {
-    money divide 100 4
+	money divide 100 4
 } -result "25.00"
 
 test divide_test_2 {Dividing by zero should return an error} -body {
-    money divide 100 0
+	money divide 100 0
 } -returnCodes error -result "Division by zero is not allowed."
 
 test percentagechange_test_1 {Percentage increase} -body {
-    money percentagechange 100 150
+	money percentagechange 100 150
 } -result "+50.00%"
 
 test percentagechange_test_2 {Percentage decrease} -body {
-    money percentagechange 200 150
+	money percentagechange 200 150
 } -result "-25.00%"
 
 test percentagechange_test_3 {Zero as original value} -body {
-    money percentagechange 0 150
+	money percentagechange 0 150
 } -result "Error: Percentage change cannot be calculated when the original value is zero."
 
 test average_test_1 {Average of a list of numbers} -body {
-    money average {10 20 30 40 50}
+	money average {10 20 30 40 50}
 } -result "30.00"
 
 test average_test_2 {Average of an empty list} -body {
-    money average {}
+	money average {}
 } -returnCodes error -result "List is empty"
 
-# Cleanup tests
+# ---- arithmetic: decimal exactness, signs, magnitude ----
+
+test add_dec_1 {0.1 + 0.2 is exact} -body {
+	money add 0.1 0.2
+} -result "0.30"
+
+test add_zero_1 {Adding zero} -body {
+	money add 100 0
+} -result "100.00"
+
+test add_neg_1 {Adding two negatives} -body {
+	money add -1.25 -2.50
+} -result "-3.75"
+
+test subtract_zero_1 {x - x} -body {
+	money subtract 1 1
+} -result "0.00"
+
+test subtract_neg_1 {Result goes negative} -body {
+	money subtract 1 1.5
+} -result "-0.50"
+
+test multiply_big_1 {Large product has no exponent notation} -body {
+	money multiply 1e6 1e6
+} -result "1000000000000.00"
+
+test multiply_dec_1 {Decimal multiply} -body {
+	money multiply 19.99 3
+} -result "59.97"
+
+test multiply_zero_1 {Multiply by zero} -body {
+	money multiply 123.45 0
+} -result "0.00"
+
+test divide_round_1 {Repeating decimal rounds down} -body {
+	money divide 10 3
+} -result "3.33"
+
+test divide_round_2 {Repeating decimal rounds up} -body {
+	money divide 2 3
+} -result "0.67"
+
+test divide_zero_2 {Divide by 0.00} -body {
+	money divide 1 0.00
+} -returnCodes error -result "Division by zero is not allowed."
+
+test divide_zero_3 {Zero numerator is fine} -body {
+	money divide 0 5
+} -result "0.00"
+
+# ---- rounding (half-even) ----
+
+test round_1 {Basic round} -body {
+	money round 1234.5678
+} -result "1234.57"
+
+test round_2 {Integer input} -body {
+	money round 100
+} -result "100.00"
+
+test round_even_1 {Tie rounds to even (down)} -body {
+	money round 2.345
+} -result "2.34"
+
+test round_even_2 {Tie rounds to even (up)} -body {
+	money round 2.335
+} -result "2.34"
+
+test round_even_3 {Tie at 1.005 goes to 1.00} -body {
+	money round 1.005
+} -result "1.00"
+
+test round_digits_arg_1 {Explicit digits argument} -body {
+	money round 3.14159 4
+} -result "3.1416"
+
+test round_negative_1 {Negative rounding} -body {
+	money round -2.345
+} -result "-2.34"
+
+# ---- percent helpers ----
+
+test addPercent_1 {+20%} -body {
+	money addPercent 100 20
+} -result "120.00"
+
+test addPercent_2 {+10% on 200} -body {
+	money addPercent 200 10
+} -result "220.00"
+
+test subtractPercent_1 {-20%} -body {
+	money subtractPercent 100 20
+} -result "80.00"
+
+test getPercent_1 {15% of 200} -body {
+	money getPercent 200 15
+} -result "30.00"
+
+test getPercent_2 {Rounds result} -body {
+	money getPercent 33.33 10
+} -result "3.33"
+
+test get100Percent_1 {Extract net from gross (18% tax)} -body {
+	money get100Percent 118 18
+} -result "100.00"
+
+test get100Percent_2 {Extract net from gross (21%)} -body {
+	money get100Percent 121 21
+} -result "100.00"
+
+# ---- change / average / percentagechange ----
+
+test change_1 {Change due} -body {
+	money change 100 75.50
+} -result "24.50"
+
+test change_2 {Underpaid gives negative} -body {
+	money change 50 75.50
+} -result "-25.50"
+
+test average_2 {Average rounds} -body {
+	money average {1 2}
+} -result "1.50"
+
+test average_3 {Single element} -body {
+	money average {7.25}
+} -result "7.25"
+
+test average_4 {Repeating average} -body {
+	money average {1 1 2}
+} -result "1.33"
+
+test percentagechange_4 {Drop to half} -body {
+	money percentagechange 100 50
+} -result "-50.00%"
+
+test percentagechange_5 {No change} -body {
+	money percentagechange 100 100
+} -result "+0.00%"
+
+# ---- invalid input ----
+
+test invalid_1 {Non-numeric add raises error} -body {
+	money add abc 1
+} -returnCodes error -match glob -result *
+
+test invalid_2 {Non-numeric round raises error} -body {
+	money round abc
+} -returnCodes error -match glob -result *
+
+test invalid_3 {Empty string raises error} -body {
+	money multiply "" 2
+} -returnCodes error -match glob -result *
+
+# ---- state: round_digits ----
+
+test digits_default_1 {Default is 2} -body {
+	money getRoundDigits
+} -result 2
+
+test digits_set_1 {setRoundDigits changes output} -body {
+	money setRoundDigits 3
+	money add 1 1
+} -cleanup {
+	money setRoundDigits 2
+} -result "2.000"
+
+test digits_set_2 {Zero digits} -body {
+	money setRoundDigits 0
+	money round 2.7
+} -cleanup {
+	money setRoundDigits 2
+} -result "3"
+
+test digits_restored_1 {Cleanup restored default} -body {
+	money add 1 1
+} -result "2.00"
+
+# ---- metadata ----
+
+test version_1 {version method} -body {
+	money version
+} -result "1.0.3"
+
+test version_2 {package version matches object} -body {
+	package present money
+} -result "1.0.3"
+
+# ---- helper: thousands separator ----
+test sep_1 {Basic}    -body {
+	money withSeparators 1234567.891
+} -result "1,234,567.89"
+
+test sep_2 {Small}    -body {
+	money withSeparators 999
+} -result "999.00"
+
+test sep_3 {Negative} -body {
+	money withSeparators -1000
+} -result "-1,000.00"
+
+test sep_4 {Locale}   -body {
+	money withSeparators 1234.5 . ,
+} -result "1.234,50"
+
 cleanupTests

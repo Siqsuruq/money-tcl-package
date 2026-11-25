@@ -2,26 +2,26 @@ package require nx
 package require math::decimal
 
 nx::Object create money {
-    # Class properties
-    :object property {version "1.0.2"}
-    :object property {description "Simple Money Package, using math::decimal"}
-    :object property -accessor public {round_digits 2}
+	# Class properties
+	:object property {version "1.0.3"}
+	:object property {description "Simple Money Package, using math::decimal"}
+	:object property -accessor public {round_digits 2}
 
-    # Constructor
-    :init {} {}
+	# Constructor
+	:init {} {}
 
-    # Public method to set round_digits
-    :public object method setRoundDigits {digits} {
+	# Public method to set round_digits
+	:public object method setRoundDigits {digits} {
 		set :round_digits $digits
-    }
+	}
 
-    # Public method to get round_digits
-    :public object method getRoundDigits {} {
-        return ${:round_digits}
-    }
+	# Public method to get round_digits
+	:public object method getRoundDigits {} {
+		return ${:round_digits}
+	}
 
-    # Public method: Add Percent
-    :public object method addPercent {value percent} {
+	# Public method: Add Percent
+	:public object method addPercent {value percent} {
 		try {
 			set val [::math::decimal::fromstr $value]
 			set pr [::math::decimal::fromstr $percent]
@@ -36,10 +36,10 @@ nx::Object create money {
 			return -code error $errMsg
 			
 		}
-    }
+	}
 
-    # Public method: Subtract Percent
-    :public object method subtractPercent {value percent} {
+	# Public method: Subtract Percent
+	:public object method subtractPercent {value percent} {
 		try {
 			set val [::math::decimal::fromstr $value]
 			set pr [::math::decimal::fromstr $percent]
@@ -52,10 +52,9 @@ nx::Object create money {
 			return [:round [::math::decimal::tostr $result]]
 		} on error {errMsg} {
 			return -code error $errMsg
-			
 		}
 
-    }
+	}
 	
 	:public object method getPercent {value percent} {
 		try {
@@ -89,8 +88,8 @@ nx::Object create money {
 
 	}
 	
-    # Public method: Add
-    :public object method add {a b} {
+	# Public method: Add
+	:public object method add {a b} {
 		try {
 			set vala [::math::decimal::fromstr $a]
 			set valb [::math::decimal::fromstr $b]
@@ -99,10 +98,10 @@ nx::Object create money {
 		} on error {errMsg} {
 			return -code error $errMsg
 		}
-    }
+	}
 
-    # Public method: Subtract
-    :public object method subtract {a b} {
+	# Public method: Subtract
+	:public object method subtract {a b} {
 		try {
 			set vala [::math::decimal::fromstr $a]
 			set valb [::math::decimal::fromstr $b]
@@ -111,10 +110,10 @@ nx::Object create money {
 		} on error {errMsg} {
 			return -code error $errMsg
 		}
-    }
+	}
 
-    # Public method: Multiply
-    :public object method multiply {a b} {
+	# Public method: Multiply
+	:public object method multiply {a b} {
 		try {
 			set vala [::math::decimal::fromstr $a]
 			set valb [::math::decimal::fromstr $b]
@@ -123,10 +122,10 @@ nx::Object create money {
 		} on error {errMsg} {
 			return -code error $errMsg
 		}
-    }
+	}
 
-    # Public method: Divide
-    :public object method divide {a b} {
+	# Public method: Divide
+	:public object method divide {a b} {
 		try {
 			set vala [::math::decimal::fromstr $a]
 			set valb [::math::decimal::fromstr $b]
@@ -139,10 +138,10 @@ nx::Object create money {
 		} on error {errMsg} {
 			return -code error $errMsg
 		}
-    }
+	}
 
-    # Public method: Round
-    :public object method round {val {round_digits ""}} {
+	# Public method: Round
+	:public object method round {val {round_digits ""}} {
 		try {
 			if {$round_digits eq ""} {
 				set round_digits ${:round_digits}
@@ -152,7 +151,7 @@ nx::Object create money {
 		} on error {errMsg} {
 			return -code error $errMsg
 		}
-    }
+	}
 	
 	:public object method change {amount value} {
 		try {
@@ -209,6 +208,24 @@ nx::Object create money {
 		}
 	}
 	
+	:public object method withSeparators {val {sep ,} {dec .}} {
+		set val [:round $val]
+		lassign [split $val .] int frac
+		set sign ""
+		if {[string index $int 0] eq "-"} {
+			set sign -
+			set int [string range $int 1 end]
+		}
+		set out ""
+		while {[string length $int] > 3} {
+			set out $sep[string range $int end-2 end]$out
+			set int [string range $int 0 end-3]
+		}
+		set out $sign$int$out
+		if {$frac ne ""} {append out $dec$frac}
+		return $out
+	}
+
 	:public object method version {} {
 		return ${:version}
 	}
