@@ -3,7 +3,7 @@ package require math::decimal
 
 nx::Object create money {
 	# Class properties
-	:object property {version "1.0.3"}
+	:object property {version "1.0.4"}
 	:object property {description "Simple Money Package, using math::decimal"}
 	:object property -accessor public {round_digits 2}
 
@@ -209,7 +209,6 @@ nx::Object create money {
 	}
 	
 	:public object method withSeparators {val {sep ,} {dec .}} {
-		set val [:round $val]
 		lassign [split $val .] int frac
 		set sign ""
 		if {[string index $int 0] eq "-"} {

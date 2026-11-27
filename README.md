@@ -6,7 +6,7 @@ The `money` package is a simple and flexible money-handling package built using 
 
 ## Object Properties
 
-- **`version`**: (Default: `"1.0.3"`)
+- **`version`**: (Default: `"1.0.4"`)
   The version of the `money` package.
 
 - **`description`**:
@@ -97,7 +97,7 @@ All percentage methods return the result rounded to the specified precision.
   **Note**: If `orig` is zero, an error message string is **returned** (not raised): `Error: Percentage change cannot be calculated when the original value is zero.`
 
 - **`withSeparators {val {sep ,} {dec .}}`**
-  Formats a value for display with grouped thousands. The value is rounded first.
+  Formats a value for display with grouped thousands.
   **Parameters**:
   - `val`: Value to format.
   - `sep` (optional): Thousands separator (default `,`).
@@ -117,8 +117,8 @@ package require money
 puts [money add 100.125 200.375]          ;# 300.50
 puts [money addPercent 100 15]            ;# 115.00
 puts [money get100Percent 118 18]         ;# 100.00
-puts [money withSeparators 1234567.891]   ;# 1,234,567.89
-puts [money withSeparators 1234.5 . ,]    ;# 1.234,50
+puts [money withSeparators [money round 1234567.891]]   ;# 1,234,567.89
+puts [money withSeparators [money round 1234.5] . ,]    ;# 1.234,50
 
 money setRoundDigits 3
 puts [money add 100.125 200.375]          ;# 300.500

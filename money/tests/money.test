@@ -1,8 +1,7 @@
 package require tcltest
 namespace import ::tcltest::*
 
-lappend auto_path [file normalize [file join [pwd] ..]]
-package require money
+source [file join [file dirname [file normalize [info script]]] .. moneyClass.tcl]
 
 # ---- existing tests ----
 
@@ -238,21 +237,50 @@ test version_2 {package version matches object} -body {
 	package present money
 } -result "1.0.3"
 
-# ---- helper: thousands separator ----
-test sep_1 {Basic}    -body {
-	money withSeparators 1234567.891
+# ---- helper: thousands separator (no rounding, formats as given) ----
+test sep_1 {Basic} -body {
+	money withSeparators 1234567.89
 } -result "1,234,567.89"
 
-test sep_2 {Small}    -body {
+test sep_2 {Digits kept as given} -body {
+	money withSeparators 1234567.891
+} -result "1,234,567.891"
+
+test sep_3 {Small, no padding} -body {
 	money withSeparators 999
-} -result "999.00"
+} -result "999"
 
-test sep_3 {Negative} -body {
+test sep_4 {Negative} -body {
 	money withSeparators -1000
-} -result "-1,000.00"
+} -result "-1,000"
 
-test sep_4 {Locale}   -body {
+test sep_5 {Negative, sign not counted as a digit} -body {
+	money withSeparators -999
+} -result "-999"
+
+test sep_6 {Negative with decimals} -body {
+	money withSeparators -1234.50
+} -result "-1,234.50"
+
+test sep_7 {Locale} -body {
 	money withSeparators 1234.5 . ,
-} -result "1.234,50"
+} -result "1.234,5"
+
+test sep_8 {Group boundaries} -body {
+	list [money withSeparators 100] [money withSeparators 1000] \
+		[money withSeparators 999999] [money withSeparators 1000000]
+} -result {100 1,000 999,999 1,000,000}
+
+test sep_9 {Fraction only} -body {
+	money withSeparators 0.5
+} -result "0.5"
+
+test sep_10 {Combined with round (the reported case)} -body {
+	money withSeparators [money round 434510.23598 1]
+} -result "434,510.2"
+
+test sep_11 {Combined with round, default digits} -body {
+	money withSeparators [money round 1234567.891]
+} -result "1,234,567.89"
 
 cleanupTests
