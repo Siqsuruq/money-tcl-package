@@ -231,11 +231,11 @@ test digits_restored_1 {Cleanup restored default} -body {
 
 test version_1 {version method} -body {
 	money version
-} -result "1.0.3"
+} -result "1.0.4"
 
 test version_2 {package version matches object} -body {
 	package present money
-} -result "1.0.3"
+} -result "1.0.4"
 
 # ---- helper: thousands separator (no rounding, formats as given) ----
 test sep_1 {Basic} -body {

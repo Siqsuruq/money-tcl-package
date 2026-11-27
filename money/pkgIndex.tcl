@@ -8,4 +8,4 @@
 # script is sourced, the variable $dir must contain the
 # full path name of this file's directory.
 
-package ifneeded money 1.0.3 [list source [file join $dir moneyClass.tcl]]
+package ifneeded money 1.0.4 [list source [file join $dir moneyClass.tcl]]
